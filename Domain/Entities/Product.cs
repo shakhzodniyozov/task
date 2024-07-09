@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class Product : BaseEntity
+public class Product : BaseAuditableEntity
 {
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
@@ -10,6 +10,4 @@ public class Product : BaseEntity
     public User CreatedUser { get; set; } = null!;
     public Guid CreatedUserId { get; set; }
     public Guid UpdateUserId { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
 }

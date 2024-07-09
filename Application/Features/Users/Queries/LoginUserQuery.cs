@@ -2,7 +2,7 @@
 using FluentResults;
 using MediatR;
 
-namespace Application;
+namespace Application.Features.Users.Queries;
 
 public class LoginUserQuery : IRequest<Result<string>>
 {
@@ -12,15 +12,15 @@ public class LoginUserQuery : IRequest<Result<string>>
 
 public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, Result<string>>
 {
-    private readonly IAuthService authService;
+    private readonly IAuthService _authService;
 
     public LoginUserQueryHandler(IAuthService authService)
     {
-        this.authService = authService;
+        _authService = authService;
     }
 
     public async Task<Result<string>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
     {
-        return await authService.Login(request.Email, request.Password);
+        return await _authService.Login(request.Email, request.Password);
     }
 }

@@ -1,7 +1,7 @@
-﻿using Arch.EntityFrameworkCore.UnitOfWork;
-using Domain.Entities;
+﻿using Application.Common.Interfaces;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Products.Commands.Delete;
 
@@ -14,23 +14,21 @@ public class DeleteProductCommand : IRequest<Result>
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Result>
 {
-    private readonly IUnitOfWork uow;
-    private readonly IRepository<Product> productRepo;
+    private readonly IApplicationDbContext _dbContext;
 
-    public DeleteProductCommandHandler(IUnitOfWork uow)
+    public DeleteProductCommandHandler(IApplicationDbContext dbContext)
     {
-        this.uow = uow;
-        productRepo = uow.GetRepository<Product>();
+        _dbContext = dbContext;
     }
 
     public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await productRepo.GetFirstOrDefaultAsync(predicate: x => x.Id == request.Id, disableTracking: false);
+        var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (product is not null)
         {
-            productRepo.Delete(product!);
-            await uow.SaveChangesAsync();
+            _dbContext.Products.Remove(product);
+            await _dbContext.SaveChanges();
             return Result.Ok();
         }
         

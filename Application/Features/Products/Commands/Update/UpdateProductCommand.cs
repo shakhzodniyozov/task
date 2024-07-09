@@ -1,10 +1,10 @@
-﻿using Application.Common.Services;
+﻿using Application.Common.Interfaces;
+using Application.Common.Services;
 using Application.Features.Products.DTOs;
-using Arch.EntityFrameworkCore.UnitOfWork;
 using AutoMapper;
-using Domain.Entities;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Products.Commands.Update;
 
@@ -18,32 +18,29 @@ public class UpdateProductCommand : IRequest<Result<ProductDto>>
 
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result<ProductDto>>
 {
-    private readonly IUnitOfWork uow;
-    private readonly IRepository<Product> productRepo;
-    private readonly IMapper mapper;
-    private readonly IAuthService authService;
+    private readonly IMapper _mapper;
+    private readonly IAuthService _authService;
+    private readonly IApplicationDbContext _dbContext;
 
-    public UpdateProductCommandHandler(IUnitOfWork uow, IMapper mapper, IAuthService authService)
+    public UpdateProductCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IAuthService authService)
     {
-        this.uow = uow;
-        productRepo = uow.GetRepository<Product>();
-        this.mapper = mapper;
-        this.authService = authService;
+        _dbContext = dbContext;
+        _mapper = mapper;
+        _authService = authService;
     }
 
     public async Task<Result<ProductDto>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await productRepo.GetFirstOrDefaultAsync(predicate: x => x.Id == request.Id, disableTracking: false);
+        var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (product is null)
             return Result.Fail($"Product with provided Id={request.Id} was not found.");
         
-        mapper.Map(request, product);
-        product.UpdatedAt = DateTime.UtcNow;
-        product.UpdateUserId = authService.GetUserId();
+        _mapper.Map(request, product);
+        product.UpdateUserId = _authService.GetUserId();
 
-        await uow.SaveChangesAsync();
+        await _dbContext.SaveChanges();
 
-        return Result.Ok(mapper.Map<ProductDto>(product));
+        return Result.Ok(_mapper.Map<ProductDto>(product));
     }
 }

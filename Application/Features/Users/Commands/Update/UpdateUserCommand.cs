@@ -1,10 +1,10 @@
-﻿using Application.Common.Services;
+﻿using Application.Common.Interfaces;
+using Application.Common.Services;
 using Application.Features.Users.DTOs;
-using Arch.EntityFrameworkCore.UnitOfWork;
 using AutoMapper;
-using Domain.Entities;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Users.Commands.Update;
 
@@ -16,28 +16,25 @@ public class UpdateUserCommand : IRequest<Result<UserDto>>
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<UserDto>>
 {
-    private readonly IUnitOfWork uow;
-    private readonly IRepository<User> userRepo;
-    private readonly IMapper mapper;
-    private readonly IAuthService authService;
+    private readonly IApplicationDbContext _dbContext;
+    private readonly IMapper _mapper;
+    private readonly IAuthService _authService;
 
-    public UpdateUserCommandHandler(IUnitOfWork uow, IAuthService authService, IMapper mapper)
+    public UpdateUserCommandHandler(IApplicationDbContext dbContext, IAuthService authService, IMapper mapper)
     {
-        this.uow = uow;
-        userRepo = uow.GetRepository<User>();
-        this.mapper = mapper;
-        this.authService = authService;
+        _dbContext = dbContext;
+        _mapper = mapper;
+        _authService = authService;
     }
 
     public async Task<Result<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = authService.GetUserId();
-        var user = await userRepo.GetFirstOrDefaultAsync(predicate: x => x.Id == userId, disableTracking: false);
+        var userId = _authService.GetUserId();
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
 
-        mapper.Map(request, user);
-        user.UpdatedAt = DateTime.UtcNow;
-        await uow.SaveChangesAsync();
+        _mapper.Map(request, user);
+        await _dbContext.SaveChanges();
 
-        return Result.Ok(mapper.Map<UserDto>(user));
+        return Result.Ok(_mapper.Map<UserDto>(user));
     }
 }

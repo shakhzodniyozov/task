@@ -1,10 +1,9 @@
-﻿using Application.Common.Services;
+﻿using Application.Common.Interfaces;
+using Application.Common.Services;
 using Application.Features.Products.DTOs;
-using Arch.EntityFrameworkCore.UnitOfWork;
 using AutoMapper;
 using Domain.Entities;
 using FluentResults;
-using FluentValidation;
 using MediatR;
 
 namespace Application.Features.Products.Commands.Create;
@@ -18,30 +17,25 @@ public class CreateProductCommand : IRequest<Result<ProductDto>>
 
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<ProductDto>>
 {
-    private readonly IUnitOfWork uow;
-    private readonly IRepository<Product> productRepo;
-    private readonly IMapper mapper;
-    private readonly IValidator<CreateProductCommand> validator;
-    private readonly IAuthService authService;
+    private readonly IMapper _mapper;
+    private readonly IAuthService _authService;
+    private readonly IApplicationDbContext _dbContext;
 
-    public CreateProductCommandHandler(IUnitOfWork uow, IMapper mapper, IAuthService authService, IValidator<CreateProductCommand> validator)
+    public CreateProductCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IAuthService authService)
     {
-        this.authService = authService;
-        this.uow = uow;
-        productRepo = uow.GetRepository<Product>();
-        this.mapper = mapper;
-        this.validator = validator;
+        _authService = authService;
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
     public async Task<Result<ProductDto>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = mapper.Map<Product>(request);
-        product.CreatedAt = DateTime.UtcNow;
-        product.CreatedUserId = authService.GetUserId();
+        var product = _mapper.Map<Product>(request);
+        product.CreatedUserId = _authService.GetUserId();
 
-        await productRepo.InsertAsync(product);
-        await uow.SaveChangesAsync();
+        await _dbContext.Products.AddAsync(product, cancellationToken);
+        await _dbContext.SaveChanges();
 
-        return mapper.Map<ProductDto>(product);
+        return _mapper.Map<ProductDto>(product);
     }
 }

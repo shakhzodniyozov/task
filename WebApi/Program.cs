@@ -1,6 +1,6 @@
 using Application;
 using Infrastructure;
-using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using WebApi.Extensions;
@@ -59,10 +59,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    await app.InitializeDbContext();
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+using var scope = app.Services.CreateScope();
+var service = scope.ServiceProvider.GetRequiredService<TestUserInitializer>();
+await service.SetPasswordToTestUser();
+
 app.Run();
+

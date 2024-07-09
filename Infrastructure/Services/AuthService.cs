@@ -2,11 +2,12 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Common.Interfaces;
 using Application.Common.Services;
-using Arch.EntityFrameworkCore.UnitOfWork;
 using Domain.Entities;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,30 +15,33 @@ namespace Infrastructure.Services;
 
 public class AuthService : IAuthService
 {
-    public AuthService(IUnitOfWork uow, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IHttpContextAccessor httpContextAccessor)
+    public AuthService(IApplicationDbContext dbContext,
+                        IConfiguration configuration,
+                        TokenValidationParameters tokenValidationParameters,
+                        IHttpContextAccessor httpContextAccessor)
     {
-        userRepo = uow.GetRepository<User>();
-        this.uow = uow;
-        this.configuration = configuration;
-        this.tokenValidationParameters = tokenValidationParameters;
-        this.httpContextAccessor = httpContextAccessor;
+        _dbContext = dbContext;
+        _configuration = configuration;
+        _tokenValidationParameters = tokenValidationParameters;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    private readonly IRepository<User> userRepo;
-    private readonly IUnitOfWork uow;
-    private readonly IConfiguration configuration;
-    private readonly TokenValidationParameters tokenValidationParameters;
-    private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IConfiguration _configuration;
+    private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IApplicationDbContext _dbContext;
 
     public async Task<Result<string>> Login(string email, string password)
     {
-        var user = await userRepo.GetFirstOrDefaultAsync(predicate: x => x.Email.ToLower() == email.ToLower());
+        var user = await _dbContext.Users.AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
 
         if (user is null)
         {
             return new Error("User with provided Email was not found.");
         }
-        else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+
+        if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
         {
             return new Error("Wrong password.");
         }
@@ -53,10 +57,9 @@ public class AuthService : IAuthService
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            user.CreatedAt = DateTime.UtcNow;
 
-            await userRepo.InsertAsync(user);
-            await uow.SaveChangesAsync();
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChanges();
             
             return Result.Ok(user.Id);
         }
@@ -66,18 +69,17 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserExists(string email)
     {
-        var user = await userRepo.GetFirstOrDefaultAsync(predicate: x => x.Email.ToLower() == email.ToLower());
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => string.Equals(x.Email.ToLower(), email.ToLower(), StringComparison.InvariantCultureIgnoreCase));
 
         return user is not null;
     }
 
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512())
-        {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
+        using var hmac = new HMACSHA512();
+        
+        passwordSalt = hmac.Key;
+        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
     }
 
     private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -98,7 +100,7 @@ public class AuthService : IAuthService
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -114,6 +116,6 @@ public class AuthService : IAuthService
 
     public Guid GetUserId()
     {
-        return Guid.Parse(httpContextAccessor.HttpContext!.User.Claims.Single(x => x.Type == "userId").Value);
+        return Guid.Parse(_httpContextAccessor.HttpContext!.User.Claims.Single(x => x.Type == "userId").Value);
     }
 }

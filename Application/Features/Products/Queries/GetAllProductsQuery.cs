@@ -1,38 +1,32 @@
-﻿using Application.Features.Products.DTOs;
-using Arch.EntityFrameworkCore.UnitOfWork;
+﻿using Application.Common.Interfaces;
+using Application.Features.Products.DTOs;
 using AutoMapper;
-using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Products.Queries;
 
 public class GetAllProductsQuery : IRequest<IEnumerable<ProductDto>>
 {
-    public GetAllProductsQuery(int pageIndex, int pageSize)
-    {
-        PageSize = pageSize;
-        PageIndex = pageIndex;
-    }
 
-    public int PageIndex { get; set; }
-    public int PageSize { get; set; }
 }
 
 public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>
 {
-    public GetAllProductsQueryHandler(IUnitOfWork uow, IMapper mapper)
+    public GetAllProductsQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
     {
-        productRepo = uow.GetRepository<Product>();
-        this.mapper = mapper;
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
-    private readonly IRepository<Product> productRepo;
-    private readonly IMapper mapper;
+    private readonly IMapper _mapper;
+    private readonly IApplicationDbContext _dbContext;
 
     public async Task<IEnumerable<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
-        var products = await productRepo.GetPagedListAsync(pageIndex: request.PageIndex, pageSize: request.PageSize);
+        var products = await _dbContext.Products.AsNoTracking()
+                                                            .ToListAsync(cancellationToken);
 
-        return mapper.Map<IEnumerable<ProductDto>>(products.Items);
+        return _mapper.Map<List<ProductDto>>(products);
     }
 }

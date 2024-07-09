@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Application.Common.Interfaces;
 using Application.Common.Services;
 using Arch.EntityFrameworkCore.UnitOfWork;
 using Infrastructure.Data;
@@ -20,7 +21,7 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("default"));
         });
 
-        var tokenValidationParameters = new TokenValidationParameters()
+        var tokenValidationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value!)),
             ValidateAudience = false,
@@ -45,5 +46,7 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddTransient<TestUserInitializer>();
     }
 }

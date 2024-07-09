@@ -18,20 +18,20 @@ public static class InitializerExtensions
 
 public class ApplicationDbContextInitializer
 {
-    private readonly ApplicationDbContext dbContext;
-    private readonly IAuthService authService;
+    private readonly ApplicationDbContext _dbContext;
+    private readonly IAuthService _authService;
 
     public ApplicationDbContextInitializer(ApplicationDbContext dbContext, IAuthService authService)
     {
-        this.dbContext = dbContext;
-        this.authService = authService;
+        _dbContext = dbContext;
+        _authService = authService;
     }
 
     public async Task InitializeDbContext()
     {
         var userId = Guid.NewGuid();
         
-        if (!dbContext.Set<User>().Any())
+        if (!_dbContext.Set<User>().Any())
         {
             var user = new User
             {
@@ -41,14 +41,14 @@ public class ApplicationDbContextInitializer
                 CreatedAt = DateTime.UtcNow
             };
 
-            await authService.Register(user, "password");
+            await _authService.Register(user, "password");
         }
 
-        if(!dbContext.Set<Product>().Any())
+        if(!_dbContext.Set<Product>().Any())
         {
-            await dbContext.AddRangeAsync(new Product[]
+            await _dbContext.AddRangeAsync(new Product[]
             {
-                new Product()
+                new()
                 {
                     Name = "Product 1",
                     Price = 123,
@@ -56,7 +56,7 @@ public class ApplicationDbContextInitializer
                     CreatedAt = DateTime.UtcNow,
                     Description = "Some description"
                 },
-                new Product()
+                new()
                 {
                     Name = "Product 2",
                     Price = 321,
@@ -65,7 +65,7 @@ public class ApplicationDbContextInitializer
                     Description = "Some description"
                 }
             });
-            await dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
