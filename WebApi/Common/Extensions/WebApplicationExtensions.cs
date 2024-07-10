@@ -1,6 +1,6 @@
 using WebApi.Endpoints;
 
-namespace WebApi.Extensions;
+namespace WebApi.Common.Extensions;
 
 public static class WebApplicationExtensions
 {

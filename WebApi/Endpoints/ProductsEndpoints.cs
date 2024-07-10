@@ -6,7 +6,7 @@ using Application.Features.Products.DTOs;
 using Application.Features.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Filters;
+using WebApi.Common.Filters;
 
 namespace WebApi.Endpoints;
 

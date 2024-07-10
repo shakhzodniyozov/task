@@ -1,10 +1,10 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities;
-using Infrastructure.Data.Configurations;
+using Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Data;
+namespace Infrastructure.Context;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
@@ -32,9 +32,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         foreach (var entry in entries)
         {
             if (entry.State == EntityState.Added)
-                ((BaseAuditableEntity)entry.Entity).CreatedAt = DateTime.UtcNow;
+                entry.Entity.CreatedAt = DateTime.UtcNow;
             else if (entry.State == EntityState.Modified)
-                ((BaseAuditableEntity)entry.Entity).UpdatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
         }
         
         return base.SaveChangesAsync(cancellationToken);

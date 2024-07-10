@@ -2,8 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Common.Services;
 using Arch.EntityFrameworkCore.UnitOfWork;
-using Infrastructure.Data;
-using Infrastructure.Services;
+using Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure;
 
-public static class DependencyInjection
+public static class ServiceCollection
 {
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
@@ -43,10 +42,6 @@ public static class DependencyInjection
         });
         services.AddAuthorization();
         services.AddUnitOfWork<ApplicationDbContext>();
-
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ApplicationDbContextInitializer>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        services.AddTransient<TestUserInitializer>();
     }
 }

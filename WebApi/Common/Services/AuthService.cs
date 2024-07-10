@@ -6,12 +6,10 @@ using Application.Common.Interfaces;
 using Application.Common.Services;
 using Domain.Entities;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infrastructure.Services;
+namespace WebApi.Common.Services;
 
 public class AuthService : IAuthService
 {
@@ -69,7 +67,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserExists(string email)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(x => string.Equals(x.Email.ToLower(), email.ToLower(), StringComparison.InvariantCultureIgnoreCase));
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
 
         return user is not null;
     }

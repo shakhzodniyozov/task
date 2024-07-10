@@ -55,7 +55,7 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "Name", "PasswordHash", "PasswordSalt", "UpdatedAt" },
-                values: new object[] { new Guid("2ad06209-87f1-46fc-ac56-1657d8d8241e"), new DateTime(2024, 7, 9, 10, 41, 38, 183, DateTimeKind.Utc).AddTicks(9100), "test@test.com", "Test user", null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("062a8c4b-44de-491c-b334-3fb9c4eec29f"), DateTime.UtcNow, "test@test.com", "Test user", null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CreatedUserId",

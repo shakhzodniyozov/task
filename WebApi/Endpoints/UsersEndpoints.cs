@@ -4,7 +4,7 @@ using Application.Features.Users.Commands.Update;
 using Application.Features.Users.DTOs;
 using Application.Features.Users.Queries;
 using MediatR;
-using WebApi.Filters;
+using WebApi.Common.Filters;
 
 namespace WebApi.Endpoints;
 

@@ -1,9 +1,12 @@
 using Application;
+using Application.Common.Services;
+using Application.Features.Users.Commands.Update;
 using Infrastructure;
-using Infrastructure.Services;
+using MediatR;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using WebApi.Extensions;
+using WebApi.Common.Extensions;
+using WebApi.Common.Services;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
@@ -46,6 +49,8 @@ builder.Services.AddSwaggerGen(setup =>
     setup.CustomSchemaIds(s => s.FullName?.Replace("+", "."));
 });
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Host.UseSerilog((context, logger) =>
 {
     logger.WriteTo.Console();
@@ -65,8 +70,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 using var scope = app.Services.CreateScope();
-var service = scope.ServiceProvider.GetRequiredService<TestUserInitializer>();
-await service.SetPasswordToTestUser();
+var service = scope.ServiceProvider.GetRequiredService<IMediator>();
+await service.Send(new UpdateTestUserPasswordCommand());
 
 app.Run();
 
