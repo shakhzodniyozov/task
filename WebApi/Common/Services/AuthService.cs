@@ -15,17 +15,14 @@ public class AuthService : IAuthService
 {
     public AuthService(IApplicationDbContext dbContext,
                         IConfiguration configuration,
-                        TokenValidationParameters tokenValidationParameters,
                         IHttpContextAccessor httpContextAccessor)
     {
         _dbContext = dbContext;
         _configuration = configuration;
-        _tokenValidationParameters = tokenValidationParameters;
         _httpContextAccessor = httpContextAccessor;
     }
 
     private readonly IConfiguration _configuration;
-    private readonly TokenValidationParameters _tokenValidationParameters;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IApplicationDbContext _dbContext;
 
