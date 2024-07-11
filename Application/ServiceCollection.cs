@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Application.Common.Mappings;
 using Application.Features.Products.Commands.Create;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,7 @@ public static class ServiceCollection
             c.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
 
-        services.AddAutoMapper(typeof(MappingProfiles));
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
     }
 }

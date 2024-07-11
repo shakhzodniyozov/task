@@ -1,7 +1,6 @@
 using Application.Features.Users.Commands.Create;
 using Application.Features.Users.Commands.Delete;
 using Application.Features.Users.Commands.Update;
-using Application.Features.Users.DTOs;
 using Application.Features.Users.Queries;
 using MediatR;
 using WebApi.Common.Filters;
@@ -15,7 +14,6 @@ public static class UserEndpoints
         var root = app.MapGroup("api/users").WithOpenApi()
                                             .WithTags("Users")
                                             .RequireAuthorization();
-
         
         #region GET
         

@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Application.Features.Products.DTOs;
+using Application.Features.Products.Queries;
 using AutoMapper;
 using FluentResults;
 using MediatR;

@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Services;
-using Application.Features.Users.DTOs;
+using Application.Features.Users.Queries;
 using AutoMapper;
 using FluentResults;
 using MediatR;

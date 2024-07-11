@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Services;
-using Application.Features.Products.DTOs;
+using Application.Features.Products.Queries;
 using AutoMapper;
 using Domain.Entities;
 using FluentResults;

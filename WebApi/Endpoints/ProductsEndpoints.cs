@@ -2,7 +2,6 @@ using Application;
 using Application.Features.Products.Commands.Create;
 using Application.Features.Products.Commands.Delete;
 using Application.Features.Products.Commands.Update;
-using Application.Features.Products.DTOs;
 using Application.Features.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,6 @@ public static class ProductsEndpoints
         var root = webApplication.MapGroup("api/products").WithOpenApi()
                                                                     .WithTags("Products")
                                                                     .RequireAuthorization();
-
         
         #region GET
         
