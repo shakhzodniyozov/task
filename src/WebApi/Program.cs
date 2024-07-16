@@ -15,7 +15,6 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddPresentationServices(builder);
 
-
 var app = builder.Build();
 
 app.ConfigureApplication();

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\Shared.Events\Shared.Events.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -15,6 +16,8 @@
         <PackageReference Include="FluentResults" Version="3.16.0" />
         <PackageReference Include="FluentValidation" Version="11.9.2" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
         <PackageReference Include="MediatR" Version="12.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.UnitOfWork" Version="3.1.0" />

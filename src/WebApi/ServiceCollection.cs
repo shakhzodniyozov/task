@@ -1,10 +1,12 @@
 using System.Text;
 using Application.Common.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using WebApi.Common.Services;
+using WebApi.Settings;
 
 namespace WebApi;
 
@@ -75,7 +77,16 @@ public static class ServiceCollection
                 options.TokenValidationParameters = tokenValidationParameters;
             });
         services.AddAuthorization();
-        
+        services.AddMassTransit(configure =>
+        {
+            configure.UsingRabbitMq((context, configurator) =>
+            {
+                var rabbitMqSettings = builder.Configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
+                configurator.Host(rabbitMqSettings!.Host);
+                configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("ProductUser",false));
+            });
+        });
+
         return services;
     }
 }
