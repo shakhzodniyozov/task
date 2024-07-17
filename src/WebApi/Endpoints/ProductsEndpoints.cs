@@ -1,8 +1,9 @@
-using Application;
-using Application.Features.Products.Commands.Create;
+using Application.Features.Products.Commands.CreateProduct;
 using Application.Features.Products.Commands.Delete;
-using Application.Features.Products.Commands.Update;
+using Application.Features.Products.Commands.UpdateProduct;
 using Application.Features.Products.Queries;
+using Application.Features.Products.Queries.GetAllProductsQuery;
+using Application.Features.Products.Queries.GetProductByIdQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Common.Filters;

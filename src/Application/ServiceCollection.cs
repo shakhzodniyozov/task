@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Application.Features.Products.Commands.Create;
+using Application.Features.Products.Commands.CreateProduct;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

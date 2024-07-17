@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Common.Interfaces;
-using Application.Common.Services;
 using Domain.Entities;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -95,7 +94,7 @@ public class AuthService : IAuthService
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Secret").Value!));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

@@ -1,7 +1,10 @@
 using Application.Features.Users.Commands.Create;
 using Application.Features.Users.Commands.Delete;
-using Application.Features.Users.Commands.Update;
+using Application.Features.Users.Commands.Update.UpdateUser;
 using Application.Features.Users.Queries;
+using Application.Features.Users.Queries.GetAllUsersQuery;
+using Application.Features.Users.Queries.GetUserByIdQuery;
+using Application.Features.Users.Queries.LoginUserQuery;
 using MediatR;
 using WebApi.Common.Filters;
 

@@ -1,12 +1,12 @@
 using System.Text;
-using Application.Common.Services;
+using Application.Common.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using WebApi.Common.Configurations;
 using WebApi.Common.Services;
-using WebApi.Settings;
 
 namespace WebApi;
 
@@ -58,7 +58,7 @@ public static class ServiceCollection
         
         var tokenValidationParameters = new TokenValidationParameters
         {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWT:Secret").Value!)),
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateLifetime = true,
@@ -81,7 +81,12 @@ public static class ServiceCollection
         {
             configure.UsingRabbitMq((context, configurator) =>
             {
-                var rabbitMqSettings = builder.Configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
+                var rabbitMqSettings = new RabbitMqConfigurations();
+                builder.Configuration.GetSection(RabbitMqConfigurations.Key).Bind(rabbitMqSettings);
+                if (rabbitMqSettings.Host is null)
+                {
+                    Console.WriteLine("asd");
+                }
                 configurator.Host(rabbitMqSettings!.Host);
                 configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("ProductUser",false));
             });
