@@ -50,11 +50,7 @@ public static class ServiceCollection
         });
 
         services.AddScoped<IAuthService, AuthService>();
-
-        builder.Host.UseSerilog((context, logger) =>
-        {
-            logger.WriteTo.Console();
-        });
+        services.AddSerilog(conf => conf.ReadFrom.Configuration(builder.Configuration));
         
         var tokenValidationParameters = new TokenValidationParameters
         {
@@ -83,10 +79,6 @@ public static class ServiceCollection
             {
                 var rabbitMqSettings = new RabbitMqConfigurations();
                 builder.Configuration.GetSection(RabbitMqConfigurations.Key).Bind(rabbitMqSettings);
-                if (rabbitMqSettings.Host is null)
-                {
-                    Console.WriteLine("asd");
-                }
                 configurator.Host(rabbitMqSettings!.Host);
                 configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("ProductUser",false));
             });
