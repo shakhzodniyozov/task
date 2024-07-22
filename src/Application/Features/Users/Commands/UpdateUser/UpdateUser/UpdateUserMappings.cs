@@ -1,4 +1,3 @@
-using Application.Features.Users.Commands.Update.UpdateUser;
 using AutoMapper;
 using Domain.Entities;
 

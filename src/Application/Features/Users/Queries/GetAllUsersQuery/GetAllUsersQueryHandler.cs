@@ -1,11 +1,12 @@
 using Application.Common.Interfaces;
+using Application.Common.Responses;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Users.Queries.GetAllUsersQuery;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<UserDto>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, BaseResponse<IEnumerable<UserDto>>>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
@@ -16,10 +17,11 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<IEnumerable<UserDto>>> Handle(GetAllUsersQuery request,
+        CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users.AsNoTracking().ToListAsync(cancellationToken);
 
-        return _mapper.Map<IEnumerable<UserDto>>(users);
+        return new SuccessResponse<IEnumerable<UserDto>>(_mapper.Map<IEnumerable<UserDto>>(users));
     }
 }

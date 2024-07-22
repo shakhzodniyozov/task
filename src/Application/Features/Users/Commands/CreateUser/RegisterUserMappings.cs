@@ -1,4 +1,3 @@
-using Application.Features.Users.Commands.Create;
 using AutoMapper;
 using Domain.Entities;
 

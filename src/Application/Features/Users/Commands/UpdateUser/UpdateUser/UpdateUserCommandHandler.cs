@@ -1,33 +1,34 @@
 using Application.Common.Interfaces;
+using Application.Common.Responses;
 using Application.Features.Users.Queries;
+using Application.Features.Users.Queries.GetAllUsersQuery;
 using AutoMapper;
-using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Users.Commands.Update.UpdateUser;
+namespace Application.Features.Users.Commands.UpdateUser.UpdateUser;
 
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<UserDto>>
+public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, BaseResponse<UserDto>>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly IAuthService _authService;
+    private readonly IAuthenticationService _authenticationService;
 
-    public UpdateUserCommandHandler(IApplicationDbContext dbContext, IAuthService authService, IMapper mapper)
+    public UpdateUserCommandHandler(IApplicationDbContext dbContext, IAuthenticationService authenticationService, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
-        _authService = authService;
+        _authenticationService = authenticationService;
     }
 
-    public async Task<Result<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = _authService.GetUserId();
+        var userId = _authenticationService.GetUserId();
         var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
 
         _mapper.Map(request, user);
         await _dbContext.SaveChanges(cancellationToken);
 
-        return Result.Ok(_mapper.Map<UserDto>(user));
+        return new SuccessResponse<UserDto>(_mapper.Map<UserDto>(user));
     }
 }

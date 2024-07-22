@@ -1,7 +1,6 @@
-﻿using Application.Features.Users.Commands.Create;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace Application;
+namespace Application.Features.Users.Commands.CreateUser;
 
 public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
 {

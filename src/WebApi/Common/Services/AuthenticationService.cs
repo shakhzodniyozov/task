@@ -10,9 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebApi.Common.Services;
 
-public class AuthService : IAuthService
+public class AuthenticationService : IAuthenticationService
 {
-    public AuthService(IApplicationDbContext dbContext,
+    public AuthenticationService(IApplicationDbContext dbContext,
                         IConfiguration configuration,
                         IHttpContextAccessor httpContextAccessor)
     {
@@ -35,7 +35,7 @@ public class AuthService : IAuthService
             return new Error("User with provided Email was not found.");
         }
 
-        if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+        if (!VerifyPasswordHash(password, user.PasswordHash!, user.PasswordSalt!))
         {
             return new Error("Wrong password.");
         }

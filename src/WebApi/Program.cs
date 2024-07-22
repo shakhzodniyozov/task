@@ -1,5 +1,5 @@
 using Application;
-using Application.Features.Users.Commands.Update.UpdateTestUser;
+using Application.Features.Users.Commands.UpdateUser.UpdateTestUser;
 using Infrastructure;
 using MediatR;
 using Serilog;

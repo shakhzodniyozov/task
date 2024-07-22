@@ -1,3 +1,4 @@
+using Application.Common.Responses;
 using FluentValidation;
 
 namespace WebApi.Common.Filters;
@@ -15,7 +16,10 @@ public class ValidationFilter<T> : IEndpointFilter where T : class
             var validationResult = await validator.ValidateAsync(argToValidate!);
             if (!validationResult.IsValid)
             {
-                return Results.BadRequest(validationResult.ToDictionary());
+                var errorResponse = new ErrorResponse<T>("One or more validation errors occured.",
+                    validationResult.ToDictionary());
+                
+                return Results.BadRequest(errorResponse);
             }
         }
         

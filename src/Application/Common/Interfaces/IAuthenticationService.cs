@@ -3,7 +3,7 @@ using FluentResults;
 
 namespace Application.Common.Interfaces;
 
-public interface IAuthService
+public interface IAuthenticationService
 {
     Task<Result<Guid>> Register(User user, string password);
     Task<Result<string>> Login(string email, string password);

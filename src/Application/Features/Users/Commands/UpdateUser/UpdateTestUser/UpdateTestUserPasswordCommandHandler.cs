@@ -3,18 +3,18 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Application.Features.Users.Commands.Update.UpdateTestUser;
+namespace Application.Features.Users.Commands.UpdateUser.UpdateTestUser;
 
 public class UpdateTestUserPasswordCommandHandler : IRequestHandler<UpdateTestUserPasswordCommand>
 {
     private readonly IApplicationDbContext _dbContext;
-    private readonly IAuthService _authService;
+    private readonly IAuthenticationService _authenticationService;
     private readonly IConfiguration _configuration;
 
-    public UpdateTestUserPasswordCommandHandler(IApplicationDbContext dbContext, IAuthService authService, IConfiguration configuration)
+    public UpdateTestUserPasswordCommandHandler(IApplicationDbContext dbContext, IAuthenticationService authenticationService, IConfiguration configuration)
     {
         _dbContext = dbContext;
-        _authService = authService;
+        _authenticationService = authenticationService;
         _configuration = configuration;
     }
 
@@ -25,7 +25,7 @@ public class UpdateTestUserPasswordCommandHandler : IRequestHandler<UpdateTestUs
 
         if (user is not null && user.PasswordHash is null)
         {
-            _authService.CreatePasswordHash(_configuration.GetSection("SeederOptions:InitialUserPassword").Value!,
+            _authenticationService.CreatePasswordHash(_configuration.GetSection("SeederOptions:InitialUserPassword").Value!,
                 out var passwordHash, out var passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
