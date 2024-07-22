@@ -17,6 +17,19 @@ services:
       - 5100:5432
     environment:
       POSTGRES_PASSWORD: sql
+      
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    ports:
+      - 5341:80
+    volumes:
+      - seq-data:/data
+      - seq-logs:/dev/log
+    environment:
+      ACCEPT_EULA: Y
         
 volumes: 
   rabbitmqdata:
+  seq-data:
+  seq-logs:

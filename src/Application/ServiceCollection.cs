@@ -12,7 +12,6 @@ public static class ServiceCollection
         services.AddMediatR(c =>
         {
             c.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            c.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
 
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
