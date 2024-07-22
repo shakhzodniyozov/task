@@ -49,7 +49,7 @@ public static class ServiceCollection
             setup.CustomSchemaIds(s => s.FullName?.Replace("+", "."));
         });
 
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddSerilog(conf => conf.ReadFrom.Configuration(builder.Configuration));
         
         var tokenValidationParameters = new TokenValidationParameters

@@ -1,4 +1,3 @@
-using Application.Features.Products.Queries;
 using AutoMapper;
 using Domain.Entities;
 
@@ -8,6 +7,6 @@ public class GetUserByIdMappings : Profile
 {
     public GetUserByIdMappings()
     {
-        CreateMap<Product, ProductDto>();
+        CreateMap<User, GetUserByIdDto>();
     }
 }

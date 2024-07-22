@@ -1,10 +1,10 @@
-﻿using Application.Features.Products.Queries;
-using FluentResults;
+﻿using Application.Common.Responses;
+using Application.Features.Products.Queries;
 using MediatR;
 
 namespace Application.Features.Products.Commands.UpdateProduct;
 
-public class UpdateProductCommand : IRequest<Result<ProductDto>>
+public class UpdateProductCommand : IRequest<BaseResponse<ProductDto>>
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;

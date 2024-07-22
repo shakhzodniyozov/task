@@ -1,5 +1,4 @@
-﻿using Application.Features.Users.Commands.Update.UpdateUser;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Features.Users.Commands.UpdateUser.UpdateUser;
 
